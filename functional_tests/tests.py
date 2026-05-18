@@ -67,5 +67,38 @@ class NewVisitorTest(LiveServerTestCase):
         # 他看到网站为他生成了一个URL
         # 他访问那个URL，发现他的待办事项列表还在
         # 他满意的离开了
+    def test_multiple_users_can_start_lists_at_different_urls(self):
+        # 张三开始了一个新清单
+        self.browser.get(self.live_server_url)
+        inputbox = self.browser.find_element(By.ID, 'id_new_item')
+        inputbox.send_keys('Buy milk')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: Buy milk')
+        # 他看到他的待办事项列表有一个URL
+        zhangsan_list_url = self.browser.current_url
+        self.assertRegex(zhangsan_list_url, '/lists/.+')
 
+        # 现在应该新用户王五访问网站
+        # 我们使用一个新浏览器会话
+        # 确保张三的信息不会被携带过来
+        self.browser.quit()
+        self.browser = webdriver.Firefox()
+
+        # 王五访问首页，页面中看不到张三的清单
+        self.browser.get(self.live_server_url)
+        page_text = self.browser.find_element(By.TAG_NAME, 'body').text
+        self.assertNotIn('Buy milk', page_text)
+        self.assertNotIn('Make tea', page_text)
+
+        # 王五获得了他的唯一URL
+        wangwu_list_url = self.browser.current_url
+        self.assertRegex(wangwu_list_url, '/lists/.+')
+        self.assertNotEqual(wangwu_list_url, zhangsan_list_url)
+
+        #这个页面还是没有张三的清单
+        page_text = self.browser.find_element(By.TAG_NAME, 'body').text
+        self.assertNotIn('Buy milk', page_text)
+        self.assertNotIn('Make tea', page_text)
+
+        # 他满意的离开了
         self.fail('Finish the test!')
