@@ -1,0 +1,13 @@
+[Unit]
+Description=Gunicorn for SITENAME
+After=network.target
+
+[Service]
+User=yyy
+Group=yyy
+WorkingDirectory=/home/yyy/sites/SITENAME/source
+ExecStart=/home/yyy/sites/SITENAME/virtualenv/bin/gunicorn --bind unix:/tmp/SITENAME.socket notes.wsgi:application
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
