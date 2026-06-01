@@ -1,7 +1,7 @@
 from fabric import task
 import os
 
-REPO_URL = 'https://github.com/key2337/superlist.git'
+REPO_URL = 'git@github.com:key2337/superlist.git'
 SITENAME = '39.105.88.230'
 
 def _create_directory_structure_if_necessary(c):
