@@ -116,15 +116,18 @@ class NewVisitorTest(StaticLiveServerTestCase):
         self.assertNotIn('Buy milk', page_text)
         self.assertNotIn('Make tea', page_text)
 
+        # 王五输入一个新事项
+        inputbox = self.browser.find_element(By.ID, 'id_new_item')
+        inputbox.send_keys('Make tea')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: Make tea')
+
         # 王五获得了他的唯一URL
         wangwu_list_url = self.browser.current_url
         self.assertRegex(wangwu_list_url, '/lists/.+')
         self.assertNotEqual(wangwu_list_url, zhangsan_list_url)
 
-        #这个页面还是没有张三的清单
+        # 这个页面还是没有张三的清单
         page_text = self.browser.find_element(By.TAG_NAME, 'body').text
         self.assertNotIn('Buy milk', page_text)
         self.assertNotIn('Make tea', page_text)
-
-        # 他满意的离开了
-        self.fail('Finish the test!')
